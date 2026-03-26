@@ -11,7 +11,7 @@ export const uploadLimiter = rateLimit({
 const storage = multer.memoryStorage();
 
 const fileFilter = (req:Express.Request,file:Express.Multer.File,cb:multer.FileFilterCallback)=>{
-    if(file.mimetype.startsWith("image/") || file.mimetype.startsWith("audio/")){
+    if(file.mimetype.startsWith("image/") || file.mimetype.startsWith("audio/") ||   file.mimetype === "application/octet-stream"){
         cb(null,true);
     }else{
         cb(null,false);

@@ -3,7 +3,6 @@ import AppError from "../utils/appClass.ts";
 import Song from "../models/song.model.ts";
 import cloudinary from "../config/cloudinary.ts";
 import Album from "../models/album.model.ts";
-import fs from "fs";
 import User from "../models/user.model.ts";
 import { getAuth } from "@clerk/express";
 
@@ -26,6 +25,8 @@ export const CreateSong = AsyncHandler(async (req, res) => {
     if (!imageFile || !audioFile) {
         throw new AppError(400, "Both image and audio files are required");
     }
+
+    console.log("Files received:", { imageFile, audioFile });
 
     const { title, artist, duration, albumId } = req.body;
 
@@ -74,10 +75,6 @@ export const CreateSong = AsyncHandler(async (req, res) => {
     } catch (err) {
         console.error("Cloudinary error:", err);
         throw new AppError(500, "Failed to upload files");
-    } finally {
-        // always cleanup
-        fs.unlinkSync(imageFile.path);
-        fs.unlinkSync(audioFile.path);
     }
 
 })
@@ -174,8 +171,6 @@ export const updateSong = AsyncHandler(async (req, res) => {
         //now update the song image url and id
         song.imageUrl = uploadImage.secure_url;
         song.imageId = uploadImage.public_id;
-
-        fs.unlinkSync(imageFile.path);
 
     }
     if (audioFile) {
