@@ -2,13 +2,14 @@ import {Server, Socket} from 'socket.io'
 import http from 'http';
 import Message from '../models/message.model.ts';
 
-
+import dotenv from 'dotenv';
+dotenv.config();
 
 export const InitializeSocket = (server:http.Server)=>{
 
     const io = new Server(server,{
         cors:{
-            origin:"http://localhost:5173",
+            origin:process.env.BASE_URL,
             credentials:true
         }
     })
