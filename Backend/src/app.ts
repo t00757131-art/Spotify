@@ -58,7 +58,7 @@ if(process.env.NODE_ENV === "production"){
 
 app.use(errorHandler);
 
-startCronJob();
+// startCronJob();
 
 
 export default app;
