@@ -15,7 +15,7 @@ export const useGetSpecificSongs = (size:number,url:string)=>{
         queryKey:['songs',size,url],
         queryFn:async()=>{
 
-            const res = await axios.get(`http://localhost:3000/api/songs/${url}`,{
+            const res = await axios.get(`https://spotify-production-4f14.up.railway.app/api/songs/${url}`,{
                 withCredentials:true,
                 params:{
                     size
