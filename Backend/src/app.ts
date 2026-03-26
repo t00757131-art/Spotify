@@ -12,16 +12,24 @@ import { inngest,functions } from './inngest/index.ts';
 import { clerkMiddleware } from '@clerk/express';
 import path from 'path';
 import startCronJob from './cron/index.ts';
+import helmet from 'helmet';
+import morgan from 'morgan';
 
-const __dirname = path.resolve();
 
+const __dirname = process.cwd();
 
 const app  = express();
+
+app.set("trust proxy", 1);
+
+app.use(helmet());
+
+app.use(morgan("combined"));
 
 app.use(express.json());
 
 app.use(cors({
-    origin:[process.env.BASE_URL! , "https://spotify-production-4f14.up.railway.app"],
+    origin:[process.env.BASE_URL || true , "https://spotify-production-4f14.up.railway.app"],
     credentials:true,
     methods:["GET","POST","PUT","DELETE","PATCH"],
 }));
@@ -41,7 +49,7 @@ app.use("/api/stats",statsRouter)
 if(process.env.NODE_ENV === "production"){
     app.use(express.static(path.join(__dirname,"../Frontend/dist")));
 
-    app.get("/.",(req,res)=>{
+    app.use((req,res)=>{
         res.sendFile(path.join(__dirname,"../Frontend","dist","index.html"))
     })
 }
