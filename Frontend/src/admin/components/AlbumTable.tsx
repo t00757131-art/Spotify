@@ -1,10 +1,13 @@
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { useDeleteAlbum } from "@/hooks/useAdmin";
+import { useDeleteAlbum, useUpdateAlbum } from "@/hooks/useAdmin";
 import useMusicStore from "@/store/useMusicStore";
 import usePlayerStore from "@/store/usePlayerStore";
-import { CalendarIcon, Loader2Icon, MusicIcon, Trash2Icon } from "lucide-react";
+import { CalendarIcon, Loader2Icon, MusicIcon, SquarePenIcon, Trash2Icon } from "lucide-react";
+import UpdateAlbumDialog from "./UpdateAlbumDialog";
+import { useState } from "react";
+import type { Album } from "@/interfaces/album";
 
 
 const AlbumTable = () => {
@@ -18,8 +21,23 @@ const AlbumTable = () => {
         console.log("Deleting :",albumId);
         deleteAlbum(albumId);
     }
+    const [open,setOpen] = useState(false);
+    const [selectedAlbum,setSelectedAlbum] = useState<Album>({} as Album);
+
+    const {mutate:updateAlbum,isPending:isAlbumUpdating,variables:updateVariables} = useUpdateAlbum();
 
   return (
+
+    <>
+
+    <UpdateAlbumDialog
+     open={open}
+     onClose={()=>setOpen(false)}
+     updateAlbum={updateAlbum}
+     isPending={isAlbumUpdating}
+     album={selectedAlbum}
+    />
+    
     <Table>
         <TableHeader>
             <TableRow className="hover:bg-zinc-800/50 transition-colors">
@@ -28,7 +46,7 @@ const AlbumTable = () => {
             <TableHead>Artist</TableHead>   
             <TableHead>Release Year</TableHead>   
             <TableHead>Songs</TableHead>   
-            <TableHead>Actions</TableHead>   
+            <TableHead className="text-right">Actions</TableHead>   
             </TableRow>
         </TableHeader>
 
@@ -54,7 +72,26 @@ const AlbumTable = () => {
                         </div>
                     </TableCell>   
                     <TableCell className="text-right">
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-2 justify-end">
+                            <Button
+                            size={isMobile ? "icon":'icon-lg'}
+                            variant={'ghost'}
+                            aria-label="Edit album"
+                            onClick={()=>{
+                                setSelectedAlbum(album);
+                                setOpen(true);
+                            }}
+                            className="text-zinc-300 hover:text-zinc-100 hover:bg-zinc-800/20"
+                            disabled={updateVariables?.albumId === album._id && isAlbumUpdating}
+                            >
+                               
+                                { updateVariables?.albumId === album._id && isAlbumUpdating ?
+                                   <Loader2Icon className="size-4 animate-spin"/>
+                                   :
+                                <SquarePenIcon className="size-4"/>}
+
+                            </Button>
+
                             <AlertDialog>
                              <AlertDialogTrigger asChild>
                                 <Button
@@ -103,6 +140,9 @@ const AlbumTable = () => {
         </TableBody>
       
     </Table>
+      
+    </>
+    
   )
 }
 

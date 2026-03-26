@@ -1,3 +1,4 @@
+import type { Message } from "@/interfaces/message";
 import type { User } from "@/interfaces/user";
 import axiosInstance from "@/lib/axios"
 import { useQuery } from "@tanstack/react-query"
@@ -15,5 +16,15 @@ import { useQuery } from "@tanstack/react-query"
     })
 
     return{ users:data,isLoading}
- }
+}
+
+export const useGetUserMessages = (userId:string)=>{
+    return useQuery({
+        queryKey:["user-messages",userId],
+        queryFn:async()=>{
+            const res = await axiosInstance.get(`/users/messages/${userId}`);
+            return res.data.messages as Message[];
+        }
+    })
+}
  

@@ -136,4 +136,60 @@ export const useDeleteAlbum = ()=>{
 }
 
 
+export const useUpdateSong = ()=>{
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationKey:['updateSong'],
+        mutationFn:async({songId,song}:{songId:string,song:FormData})=>{
+
+            const res = await axiosInstance.put(`/admin/songs/${songId}`,song,{
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+            })
+
+            return res.data;
+        },
+        onSuccess:()=>{
+            toast.success("Song updated successfully");
+            queryClient.invalidateQueries({queryKey:['allSongs']});
+        },
+        onError:(err)=>{
+            console.log(err);
+            toast.error("Failed to update song"); 
+        }
+
+    })
+}
+
+export const useUpdateAlbum = ()=>{
+
+    const queryClient = useQueryClient();
+
+    return useMutation({
+
+        mutationKey:['updateAlbum'],
+        mutationFn:async({albumId,album}:{albumId:string,album:FormData})=>{
+
+            const res = await axiosInstance.patch(`/admin/albums/${albumId}`,album,{
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+            })
+
+            return res.data;
+        },
+        onSuccess:()=>{
+            toast.success("Album updated successfully");
+            queryClient.invalidateQueries({queryKey:['get-albums']});
+        },
+        onError:(err)=>{
+            console.log(err);
+            toast.error("Failed to update album"); 
+        }
+    })
+}
+
+
 

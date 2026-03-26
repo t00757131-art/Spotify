@@ -4,5 +4,6 @@ export interface User{
     fullname:string,
     imageUrl:string,
     clerkId:string,
-    createdAt:string
+    createdAt?:string
+    updatedAt?:string
 }

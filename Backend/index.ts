@@ -1,12 +1,14 @@
 import app from "./src/app.ts";
 import "dotenv/config";
 import ConnectToDb from "./src/config/database.ts";
+import { createServer } from "http";
+import { InitializeSocket } from "./src/config/socket.ts";
 
 const port  = process.env.PORT;
 
-app.get('/',(req,res)=>{
-    res.json({message:"Server working properly"})
-})
+const httpServer = createServer(app);
+
+InitializeSocket(httpServer);
 
 
 const startConnection  =  async()=>{
@@ -15,7 +17,7 @@ const startConnection  =  async()=>{
      await ConnectToDb();
      console.log("Database connected successfully 🎉")
 
-     app.listen(port,()=>{
+     httpServer.listen(port,()=>{
         console.log("Server is listening on port 3000 ✅")
      })
 

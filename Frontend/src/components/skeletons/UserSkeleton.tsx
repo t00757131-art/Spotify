@@ -9,7 +9,7 @@ const UserSkeleton = () => {
            
                     <div  className="flex items-center gap-2">
                         <Skeleton className="h-8 w-8 rounded-full" />
-                        <div>
+                        <div className="hidden md:block">
                             <Skeleton className="h-4 w-3/4" />
                             <Skeleton className="h-4 w-1/2" />
                         </div>

@@ -23,7 +23,7 @@ app.use(cors({
     methods:["GET","POST","PUT","DELETE","PATCH"],
 }));
 
-app.use("/api/inngest",serve({client:inngest,functions}))
+app.use("/api/inngest",serve({client:inngest,functions,streaming:true}))
 
 app.use(clerkMiddleware());
 

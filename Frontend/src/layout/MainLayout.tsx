@@ -8,13 +8,13 @@ import {
     Group,Panel,Separator
     
 } from "react-resizable-panels";
-// import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/components/ui/resizable"
 import { Outlet } from "react-router-dom";
 
 
 const MainLayout = () => {
 
     const {isMobile,setIsMobile} = usePlayerStore();
+   
 
     useEffect(()=>{
         const checkIsMobile = ()=>{
@@ -25,6 +25,8 @@ const MainLayout = () => {
 
         return ()=>window.removeEventListener('resize',checkIsMobile);
     },[isMobile,setIsMobile])
+
+    
 
   return (
     <div className="h-screen  w-full  text-white bg-black">

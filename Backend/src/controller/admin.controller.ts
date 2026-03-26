@@ -145,6 +145,92 @@ export const deleteSong = AsyncHandler(async(req,res)=>{
     })
 })
 
+export const updateSong = AsyncHandler(async(req,res)=>{
+
+    const {songId}  = req.params as {songId:string};
+
+    //check if the song exists or not
+    const song = await Song.findById(songId);
+
+    if(!song){
+        throw new AppError(404,"Song not found");
+    }
+
+    const {title,artist,duration,albumId} = req.body;
+
+    if(title){
+        song.title = title;
+    }
+    if(artist){
+        song.artist = artist;
+    }
+    if(duration){
+        const validDuration  = parseInt(duration);
+        if(isNaN(validDuration) || validDuration < 30){
+            throw new AppError(400,"Duration must be at least 30 seconds");
+        }
+        song.duration = validDuration;
+    }
+    if(albumId){
+        song.albumId = albumId;
+    }
+     
+
+    //if song image and audio are uploaded then update them
+    const files = req.files as {
+        image?: Express.Multer.File[],
+        audio?: Express.Multer.File[],
+    }
+
+    const imageFile = files.image?.[0];
+    const audioFile = files.audio?.[0];
+
+    if(imageFile){
+        //delete the old image from cloudinary
+        if(song.imageId){
+            await cloudinary.uploader.destroy(song.imageId);
+        }
+        //now upload the new image to cloudinary
+        const uploadImage = await cloudinary.uploader.upload(imageFile.path,{
+            folder:"images",
+            resource_type:"image"
+        })
+
+        //now update the song image url and id
+        song.imageUrl = uploadImage.secure_url;
+        song.imageId = uploadImage.public_id;
+
+        fs.unlinkSync(imageFile.path);
+        
+    }
+    if(audioFile){
+        //delete the old audio from cloudinary
+        if(song.audioId){
+            await cloudinary.uploader.destroy(song.audioId);
+        }
+        //now upload the new audio to cloudinary
+        const uploadAudio = await cloudinary.uploader.upload(audioFile.path,{
+            folder:"audio",
+            resource_type:"auto"
+        })
+        //now update the song audio url and id
+        song.audioUrl = uploadAudio.secure_url;
+        song.audioId = uploadAudio.public_id;
+
+        fs.unlinkSync(audioFile.path);
+
+    }
+
+        //now save the updated song
+    await song.save();
+
+        res.status(200).json({
+            success:true,
+            message:"Song updated successfully",
+        })
+
+})
+
 export const CreateAlbum = AsyncHandler(async(req,res)=>{
 
     const file = req.file;

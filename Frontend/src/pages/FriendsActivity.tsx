@@ -3,6 +3,7 @@ import { Avatar, AvatarBadge, AvatarFallback, AvatarImage } from "@/components/u
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useGetAllUsers } from "@/hooks/useUser";
 import useChatStore from "@/store/useChatStore";
+import usePlayerStore from "@/store/usePlayerStore";
 import { useAuth } from "@clerk/react"
 import { HeadphonesIcon, MusicIcon, UsersIcon } from "lucide-react";
 import { useEffect } from "react";
@@ -14,11 +15,8 @@ const FriendsActivity = () => {
 
   const {users:allUsers} = useGetAllUsers();
 
-  const users = useChatStore((state)=>state.users);
-
-  const setUsers = useChatStore((state)=>state.setUsers);
-
-  const isPlaying = false;
+  const {users,setUsers,onlineUsers,userActivities} = useChatStore((state)=>state);
+   const {isMobile} = usePlayerStore((state)=>state);
 
   useEffect(()=>{
     if(allUsers?.length){
@@ -34,7 +32,7 @@ const FriendsActivity = () => {
     </div>
   )
 
-  const isMobile = window.innerWidth < 600;
+  
   
   console.log(users)
 
@@ -55,7 +53,10 @@ const FriendsActivity = () => {
           <div className="p-4 space-y-4">
 
             {
-              users?.map((user)=>(
+              users?.map((user)=>{
+                const activity = userActivities.get(user.clerkId);
+                const isPlaying = activity && activity!=="Idle";
+                return(
                 <div key={user._id} className="cursor-pointer hover:bg-zinc-800/50 p-3 rounded-md transition-colors group">
                    
                    <div className="flex items-start gap-3">
@@ -79,10 +80,14 @@ const FriendsActivity = () => {
                         (
                           <div className="mt-1">
                              <div className="text-sm tracking-wide text-white font-medium truncate">
-                               Song
+                               {
+                                activity.replace("Playing ","").split(" by ")[0]
+                               }
                              </div>
                              <div className="text-xs text-zinc-400 text-medium truncate">
-                               by Artist
+                               by {
+                                activity.replace("Playing ","").split(" by ")[1]
+                               }
                              </div>
 
                           </div>
@@ -98,7 +103,8 @@ const FriendsActivity = () => {
 
                    </div>
                 </div>
-              ))
+                 )
+               })
             }
 
           </div>

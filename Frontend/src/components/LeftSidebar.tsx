@@ -38,7 +38,7 @@ const LeftSidebar = () => {
 
      {/* navigation menu  */}
 
-     <div className="rounded-lg bg-zinc-900 p-4">
+     <div className={`rounded-lg bg-zinc-900 p-4 ${isMobile ? "px-2" : "px-4"}`}>
 
         <div className="space-y-3">
 
@@ -88,7 +88,7 @@ const LeftSidebar = () => {
 
         <div className="flex items-center justify-between mb-6">
 
-            <div className="flex items-center text-white gap-2.5 px-2">
+            <div className="flex items-center text-white gap-2.5 ">
 
                 {isMobile ?  <Tooltip>
                   <TooltipTrigger asChild>
@@ -118,7 +118,7 @@ const LeftSidebar = () => {
                   albums.map((album)=>(
                     <Link key={album._id} to={`/album/${album._id}`}
                     className={` text-white hover:bg-zinc-800 rounded-md flex items-center gap-3 group cursor-pointer
-                      ${isMobile ? "justify-center p-2":"justify-start p-2.5"}
+                      ${isMobile ? "justify-center p-1.5":"justify-start p-2.5"}
                       `}
                     >
 

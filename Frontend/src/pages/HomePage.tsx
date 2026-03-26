@@ -36,11 +36,6 @@ const HomePage = () => {
 
   const {initializeQueue} = usePlayerStore()
 
-
-  
-
-  
-
   useEffect(()=>{
     const interval = setInterval(()=>{
       setGreetings(getGreeting());

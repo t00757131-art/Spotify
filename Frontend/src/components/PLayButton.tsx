@@ -3,14 +3,15 @@ import usePlayerStore from "@/store/usePlayerStore"
 import { Button } from "./ui/button";
 import { PauseIcon, PlayIcon } from "lucide-react";
 import { useClerk } from "@clerk/react";
+import useChatStore from "@/store/useChatStore";
 
 
 const PLayButton = ({song}:{song:Song}) => {
 
-    const {currentSong,isPlaying,setCurrentSong,tooglePlay} = usePlayerStore();
+    const {currentSong,isPlaying,SetCurrentSong,TooglePlay} = usePlayerStore();
 
-    const {openSignIn,isSignedIn} = useClerk();
-
+    const {openSignIn,isSignedIn,user} = useClerk();
+    const socket = useChatStore((state)=>state.socket);
     const isCurrentSong = currentSong?._id === song._id;
 
     const handlePlay = () => {
@@ -19,9 +20,9 @@ const PLayButton = ({song}:{song:Song}) => {
             return;
         }
         if(isCurrentSong){
-            tooglePlay();
+                TooglePlay(user?.id,socket!);
         }else{
-            setCurrentSong(song);
+             SetCurrentSong(song,user?.id,socket!);
         }
     }
 

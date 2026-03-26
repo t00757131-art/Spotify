@@ -15,6 +15,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip"
 import { useGetAlbumById } from "@/hooks/useAlbum"
+import useChatStore from "@/store/useChatStore"
 import useMusicStore from "@/store/useMusicStore"
 import usePlayerStore from "@/store/usePlayerStore"
 import { formatDuration } from "@/utils/fomratDuration"
@@ -36,9 +37,10 @@ const AlbumPage = () => {
   //fetch album from server
   const { album: AlbumData, albumLoading } = useGetAlbumById(albumId!)
 
-  const { currentSong, isPlaying, playAlbum, tooglePlay } = usePlayerStore();
+  const { currentSong, isPlaying, PlayAlbum, TooglePlay } = usePlayerStore();
 
-  const {openSignIn,isSignedIn} = useClerk();
+  const {openSignIn,isSignedIn,user} = useClerk();
+  const socket = useChatStore((state) => state.socket)
 
   
   useEffect(() => {
@@ -57,7 +59,7 @@ const AlbumPage = () => {
     }
     
     if (album) {
-      playAlbum(album.songs, index)
+      PlayAlbum(album.songs, index,user?.id,socket!)
     }
   }
 
@@ -72,7 +74,7 @@ const AlbumPage = () => {
     const isCurrentAlbumPlaying = currentSong?.albumId === albumId;
 
     if(isCurrentAlbumPlaying){
-        tooglePlay()
+        TooglePlay(user?.id,socket!)
     }else{
         handlePlayAlbum(0)
     }

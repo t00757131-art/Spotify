@@ -1,10 +1,13 @@
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { useDeleteSong } from "@/hooks/useAdmin";
+import { useDeleteSong, useUpdateSong } from "@/hooks/useAdmin";
+import type { Song } from "@/interfaces/song";
 import useMusicStore from "@/store/useMusicStore";
 import usePlayerStore from "@/store/usePlayerStore";
 import { Calendar1Icon, Loader2Icon, SquarePenIcon, Trash2Icon } from "lucide-react";
+import { useState } from "react";
+import UpdateSongDialog from "./UpdateSongDialog";
 
 
 const SongsTable = () => {
@@ -15,11 +18,25 @@ const SongsTable = () => {
     
     const {songs} = useMusicStore();
 
+    const [open,setOpen] = useState(false);
+    const [selectedSong,setSelectedSong] = useState<Song | null>(null);
+
     const handleSongDelete =(songId:string)=>{
          deleteSong(songId);
     }
 
+    const {mutate:updateSong,isPending:isSongUpdating,variables:updateVariables} = useUpdateSong()
+
   return (
+    <>
+     <UpdateSongDialog
+      open={open}
+      onOpenChange={setOpen}
+      song={selectedSong}
+      isPending={isSongUpdating}
+      updateSong={updateSong}
+     />
+     
     <Table>
        <TableHeader>
         <TableRow className="hover:bg-zinc-800/50 transition-colors">
@@ -54,12 +71,18 @@ const SongsTable = () => {
                             size={isMobile ? "icon":'icon-lg'}
                             variant={'ghost'}
                             aria-label="Edit song"
-                            
-                            
+                            onClick={()=>{
+                                setSelectedSong(song);
+                                setOpen(true);
+                            }}
                             className="text-zinc-300 hover:text-zinc-100 hover:bg-zinc-800/20"
+                            disabled={updateVariables?.songId === song._id && isSongUpdating}
                             >
                                
-                                <SquarePenIcon className="size-4"/>
+                                { updateVariables?.songId === song._id && isSongUpdating ?
+                                   <Loader2Icon className="size-4 animate-spin"/>
+                                   :
+                                <SquarePenIcon className="size-4"/>}
 
                             </Button>
 
@@ -116,6 +139,8 @@ const SongsTable = () => {
        </TableBody>
 
     </Table>
+    </>
+
   )
 }
 

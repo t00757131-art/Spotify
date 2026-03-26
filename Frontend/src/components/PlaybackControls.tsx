@@ -6,17 +6,19 @@ import { useClerk } from "@clerk/react";
 import { formatDuration } from "@/utils/fomratDuration";
 import { Slider } from "./ui/slider";
 import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
+import useChatStore from "@/store/useChatStore";
 
 
 const PlaybackControls = () => {
 
-  const {currentSong,isPlaying,tooglePlay,playNext,playPrevious,setIsPlaying,shuffleQueue,isLooping,toggleLooping}  = usePlayerStore();
+  const {currentSong,isPlaying,TooglePlay,PlayNext,PlayPrevious,setIsPlaying,shuffleQueue,isLooping,toggleLooping}  = usePlayerStore();
 
   const [volume,setVolume] = useState(75);
   const [currentTime,setCurrentTime] = useState(0);
   const [duration,setDuration] = useState(0);
 
-  const {isSignedIn,openSignIn} = useClerk();
+  const {isSignedIn,openSignIn,user} = useClerk();
+  const socket = useChatStore((state)=>state.socket);
 
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
@@ -31,7 +33,7 @@ const PlaybackControls = () => {
     const handleUpdateDuration = ()=>setDuration(audio.duration);
     const handleEnded = ()=>{
         if(isLooping) return;
-       setIsPlaying(false);
+       PlayNext(user?.id,socket!);
     }
 
     audio.addEventListener("timeupdate",handleUpdateTime);
@@ -44,7 +46,7 @@ const PlaybackControls = () => {
       audio.removeEventListener("ended",handleEnded);
     }
 
-  },[currentSong,audioRef,setIsPlaying,playNext,isLooping])
+  },[currentSong,audioRef,setIsPlaying,PlayNext,isLooping])
 
   useEffect(()=>{
     if(audioRef.current){
@@ -128,7 +130,13 @@ const PlaybackControls = () => {
                             <Button
                                 size={'icon'}
                                 variant={'ghost'}
-                                onClick={playPrevious}
+                                onClick={()=>{
+                                    if(isSignedIn){
+                                        PlayPrevious(user?.id,socket!);
+                                    }else{
+                                        openSignIn();
+                                    }
+                                }}
                                 disabled={!currentSong || !isSignedIn}
                                 className=" hover:text-white text-zinc-400"
                             >
@@ -147,7 +155,7 @@ const PlaybackControls = () => {
                         className="bg-white disabled:cursor-none disabled:pointer-events-none hover:bg-white/70 rounded-full size-10   text-black"
                         onClick={()=>{
                             if(isSignedIn){
-                                tooglePlay();
+                                TooglePlay(user?.id,socket!);
                             }else{
                                 openSignIn();
                             }
@@ -171,7 +179,13 @@ const PlaybackControls = () => {
                             <Button
                                 size={'icon'}
                                 variant={'ghost'}
-                                onClick={playNext}
+                                onClick={()=>{
+                                    if(isSignedIn){
+                                        PlayNext(user?.id,socket!);
+                                    }else{
+                                        openSignIn();
+                                    }
+                                }}
                                 disabled={!currentSong || !isSignedIn}
                                 className=" hover:text-white text-zinc-400"
                             >
