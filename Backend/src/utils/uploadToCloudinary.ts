@@ -1,4 +1,4 @@
-import cloudinary from "../config/cloudinary";
+import cloudinary from "../config/cloudinary.ts";
 
 interface CloudinaryUploadResult {
   secure_url: string;

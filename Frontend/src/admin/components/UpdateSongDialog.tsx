@@ -216,7 +216,7 @@ const UpdateSongDialog = ({ open, onOpenChange, song,isPending,updateSong }: upd
               />
 
               <div className="flex h-auto cursor-pointer flex-col items-center justify-center gap-3 rounded-lg border-2 border-dashed border-zinc-700 bg-zinc-900 p-3 transition-colors hover:bg-zinc-900/40">
-                {files.image && previewImageUrl ? (
+                { previewImageUrl ? (
                   <img
                     src={previewImageUrl}
                     alt="preview"
@@ -269,7 +269,7 @@ const UpdateSongDialog = ({ open, onOpenChange, song,isPending,updateSong }: upd
               />
 
               <div className="flex h-auto cursor-pointer flex-col items-center justify-center gap-3 rounded-lg border-2 border-dashed border-zinc-700 bg-zinc-900 p-3 transition-colors hover:bg-zinc-900/40">
-                {files.audio && previewAudioUrl ? (
+                { previewAudioUrl ? (
                   <audio controls className="w-full">
                     <source src={previewAudioUrl!} />
                   </audio>
